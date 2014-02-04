@@ -199,8 +199,16 @@ Mount.prototype.serve = function (req, res, next) {
     return false
   }
 
-  // don't allow dot-urls by default, unless explicitly allowed.
-  if (!this.opt.dot && p.match(/(^|\/)\./)) {
+  // don't allow dot-urls by default unless explicitly allowed,
+  // even if the dot is URIEncoded.
+var decodedp
+try {
+  decodedp = decodeURIComponent(p)
+}
+catch (e) {
+  decodedp = p
+}
+if (!this.opt.dot && decodedp.match(/(^|\/)\./)) {
     res.statusCode = 403
     res.end('Forbidden')
     return true
